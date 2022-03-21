@@ -40,26 +40,7 @@ export default function Extract() {
     setDisabledText(!text);
   }
 
-  async function validateFile() {
-    setWorking(true);
-    const fileField = formFile.getFieldValue("file");
-    if (!fileField.fileList.length) {
-      setWorking(false);
-      return;
-    }
-    const file = fileField.fileList[0];
-    const fileObj = file.originFileObj as File;
-    if (!fileObj) {
-      setWorking(false);
-      return;
-    }
-    // TODO
-    setWorking(false);
-  }
-
-  async function validateText() {
-    setWorking(true);
-    const text = formText.getFieldValue("text");
+  async function validate(text: string) {
     return new Promise<void>((resolve, reject) => {
       setTimeout(() => {
         const [error] = parse(text);
@@ -96,14 +77,47 @@ export default function Extract() {
       });
   }
 
+  async function validateFile() {
+    setWorking(true);
+    const fileField = formFile.getFieldValue("file");
+    if (!fileField.fileList.length) {
+      setWorking(false);
+      return;
+    }
+    const file = fileField.fileList[0];
+    const fileObj = file.originFileObj as File;
+    if (!fileObj) {
+      setWorking(false);
+      return;
+    }
+    const reader = new FileReader();
+    reader.addEventListener('load', (ev) => {
+      const { result } = reader;
+      if (typeof result !== 'string') {
+        message.error('Oops. It is unexpected.');
+        setWorking(false);
+        return;
+      }
+      validate(result);
+    });
+    reader.readAsText(fileObj);
+  }
+
+  async function validateText() {
+    setWorking(true);
+    const text = formText.getFieldValue("text");
+    validate(text);
+  }
+
   return (
     <>
       <Head>
         <title>ASN.1 Validator</title>
       </Head>
-      <Spin spinning={working}>
-        <Title level={1}>ASN.1 Valiator</Title>
 
+      <Title level={1}>ASN.1 Validator</Title>
+
+      <Spin spinning={working}>
         <Title level={2}>Validate from a file</Title>
         <Form
           form={formFile}
