@@ -4,6 +4,7 @@ import {
   Form,
   Input,
   message,
+  Modal,
   Row,
   Spin,
   Typography,
@@ -26,6 +27,13 @@ export default function Extract() {
   const [working, setWorking] = useState(false);
   const [disabledFile, setDisabledFile] = useState(true);
   const [disabledText, setDisabledText] = useState(true);
+  const [visibleModal, setVisibleModal] = useState(false);
+  const [numErrors, setNumErrors] = useState(0);
+  const [errors, setErrors] = useState("");
+
+  function onCancelModal() {
+    setVisibleModal(false);
+  }
 
   function onValuesChangeFile(changedValues: any) {
     const { file } = changedValues;
@@ -56,7 +64,7 @@ export default function Extract() {
         message.success("ASN.1 definition looks well formed.", 0);
       })
       .catch((reason) => {
-        const msg = reason.errors
+        const errors = reason.errors
           .map(
             ({
               line,
@@ -71,7 +79,9 @@ export default function Extract() {
             }
           )
           .join("\n");
-        message.error(msg);
+        setNumErrors(reason.errors.length);
+        setErrors(errors);
+        setVisibleModal(true);
       })
       .finally(() => {
         setWorking(false);
@@ -92,10 +102,10 @@ export default function Extract() {
       return;
     }
     const reader = new FileReader();
-    reader.addEventListener('load', (ev) => {
+    reader.addEventListener("load", (ev) => {
       const { result } = reader;
-      if (typeof result !== 'string') {
-        message.error('Oops. It is unexpected.', 0);
+      if (typeof result !== "string") {
+        message.error("Oops. It is unexpected.", 0);
         setWorking(false);
         return;
       }
@@ -143,7 +153,10 @@ export default function Extract() {
           <Row>
             <Col span={24}>
               <Form.Item>
-                <Button disabled={disabledFile} onClick={validateFile}>
+                <Button
+                  disabled={disabledFile || visibleModal}
+                  onClick={validateFile}
+                >
                   Validate from file
                 </Button>
               </Form.Item>
@@ -171,13 +184,32 @@ export default function Extract() {
           <Row>
             <Col span={24}>
               <Form.Item>
-                <Button disabled={disabledText} onClick={validateText}>
+                <Button
+                  disabled={disabledText || visibleModal}
+                  onClick={validateText}
+                >
                   Validate from text
                 </Button>
               </Form.Item>
             </Col>
           </Row>
         </Form>
+
+        <Modal
+          title={`ASN.1 definition seems have ${
+            numErrors === 1 ? "an error" : "errors"
+          }`}
+          visible={visibleModal}
+          onCancel={onCancelModal}
+          width="100%"
+          footer={null}
+        >
+          <TextArea
+            value={errors}
+            autoSize={{ minRows: 8, maxRows: 24 }}
+            readOnly
+          />
+        </Modal>
       </Spin>
     </>
   );
