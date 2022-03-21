@@ -32,12 +32,29 @@ export default function Extract() {
     if (!file) {
       return;
     }
-    setDisabledFile(file.fileList.length === 0);
+    setDisabledFile(!file.fileList.length);
   }
 
   function onValuesChangeText(changedValues: any) {
     const { text } = changedValues;
     setDisabledText(!text);
+  }
+
+  async function validateFile() {
+    setWorking(true);
+    const fileField = formFile.getFieldValue("file");
+    if (!fileField.fileList.length) {
+      setWorking(false);
+      return;
+    }
+    const file = fileField.fileList[0];
+    const fileObj = file.originFileObj as File;
+    if (!fileObj) {
+      setWorking(false);
+      return;
+    }
+    // TODO
+    setWorking(false);
   }
 
   async function validateText() {
@@ -111,7 +128,9 @@ export default function Extract() {
           <Row>
             <Col span={24}>
               <Form.Item>
-                <Button disabled={disabledFile}>Validate from file</Button>
+                <Button disabled={disabledFile} onClick={validateFile}>
+                  Validate from file
+                </Button>
               </Form.Item>
             </Col>
           </Row>
