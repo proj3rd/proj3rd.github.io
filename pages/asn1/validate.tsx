@@ -52,7 +52,7 @@ export default function Extract() {
       }, 0);
     })
       .then(() => {
-        message.success("ASN.1 definition looks well formed.");
+        message.success("ASN.1 definition looks well formed.", 0);
       })
       .catch((reason) => {
         const msg = reason.errors
@@ -94,7 +94,7 @@ export default function Extract() {
     reader.addEventListener('load', (ev) => {
       const { result } = reader;
       if (typeof result !== 'string') {
-        message.error('Oops. It is unexpected.');
+        message.error('Oops. It is unexpected.', 0);
         setWorking(false);
         return;
       }
@@ -126,7 +126,7 @@ export default function Extract() {
         >
           <Row>
             <Col span={24}>
-              <Form.Item name="file" label="File">
+              <Form.Item name="file">
                 <Dragger multiple={false} maxCount={1}>
                   <p className="ant-upload-drag-icon">
                     <InboxOutlined />
@@ -158,10 +158,11 @@ export default function Extract() {
         >
           <Row>
             <Col span={24}>
-              <Form.Item name="text" label="Text">
+              <Form.Item name="text">
                 <TextArea
                   autoSize={{ minRows: 8, maxRows: 24 }}
                   style={{ fontFamily: "monospace, monospace" }}
+                  placeholder="Enter ASN.1 definition to validate"
                 />
               </Form.Item>
             </Col>
