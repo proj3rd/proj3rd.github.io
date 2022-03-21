@@ -13,6 +13,7 @@ import { useForm } from "antd/lib/form/Form";
 import { InboxOutlined } from "@ant-design/icons";
 import { parse } from "asn3rd/dist/parser.js";
 import { useState } from "react";
+import Head from "next/head";
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -80,6 +81,9 @@ export default function Extract() {
 
   return (
     <>
+      <Head>
+        <title>ASN.1 Validator</title>
+      </Head>
       <Spin spinning={working}>
         <Title level={1}>ASN.1 Valiator</Title>
 
