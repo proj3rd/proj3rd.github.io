@@ -4,6 +4,7 @@ import { InboxOutlined } from "@ant-design/icons";
 import { useState } from "react";
 
 const { TextArea } = Input;
+const { Title } = Typography;
 const { Dragger } = Upload;
 
 export default function Extract() {
@@ -28,7 +29,9 @@ export default function Extract() {
 
   return (
     <>
-      <Typography.Title level={1}>ASN.1 Valiator</Typography.Title>
+      <Title level={1}>ASN.1 Valiator</Title>
+
+      <Title level={2}>Validate from a file</Title>
       <Form form={formFile} component={false} onValuesChange={onValuesChangeFile}>
         <Row>
           <Col span={24}>
@@ -52,6 +55,8 @@ export default function Extract() {
           </Col>
         </Row>
       </Form>
+
+      <Title level={2}>Validate from a text</Title>
       <Form form={formText} component={false} onValuesChange={onValuesChangeText}>
         <Row>
           <Col span={24}>
