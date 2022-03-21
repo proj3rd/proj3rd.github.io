@@ -41,6 +41,7 @@ export default function Extract() {
   }
 
   async function validate(text: string) {
+    message.destroy();
     return new Promise<void>((resolve, reject) => {
       setTimeout(() => {
         const [error] = parse(text);
