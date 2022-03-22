@@ -10,9 +10,6 @@ export default function NavBar() {
         <Link href="/">Project 3rd</Link>
       </Menu.Item>
       <SubMenu key="asn1" title="ASN.1">
-        <Menu.Item key="extract">
-          <Link href="/asn1/extract">Extract</Link>
-        </Menu.Item>
         <Menu.Item key="validate">
           <Link href="/asn1/validate">Validate</Link>
         </Menu.Item>
