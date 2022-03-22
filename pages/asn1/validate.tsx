@@ -24,6 +24,7 @@ export default function Extract() {
   const [formFile] = useForm();
   const [formText] = useForm();
 
+  const [lastAttempt, setLastAttempt] = useState<string | undefined>(undefined);
   const [working, setWorking] = useState(false);
   const [disabledFile, setDisabledFile] = useState(true);
   const [disabledText, setDisabledText] = useState(true);
@@ -33,6 +34,10 @@ export default function Extract() {
 
   function onCancelModal() {
     setVisibleModal(false);
+  }
+
+  function onClickButtonShowErrors() {
+    setVisibleModal(true);
   }
 
   function onValuesChangeFile(changedValues: any) {
@@ -90,6 +95,7 @@ export default function Extract() {
 
   async function validateFile() {
     setWorking(true);
+    setLastAttempt("file");
     const fileField = formFile.getFieldValue("file");
     if (!fileField.fileList.length) {
       setWorking(false);
@@ -116,8 +122,17 @@ export default function Extract() {
 
   async function validateText() {
     setWorking(true);
+    setLastAttempt("text");
     const text = formText.getFieldValue("text");
     validate(text);
+  }
+
+  function ErrorButton() {
+    return (
+      <Button danger onClick={onClickButtonShowErrors}>
+        Show {numErrors === 1 ? "an error" : "errors"}
+      </Button>
+    );
   }
 
   return (
@@ -159,6 +174,7 @@ export default function Extract() {
                 >
                   Validate from file
                 </Button>
+                {numErrors && lastAttempt === "file" ? <ErrorButton /> : null}
               </Form.Item>
             </Col>
           </Row>
@@ -190,6 +206,7 @@ export default function Extract() {
                 >
                   Validate from text
                 </Button>
+                {numErrors && lastAttempt === "text" ? <ErrorButton /> : null}
               </Form.Item>
             </Col>
           </Row>
