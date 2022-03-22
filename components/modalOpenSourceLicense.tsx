@@ -32,14 +32,14 @@ export default function ModalOpenSourceLicense(props: Props) {
       <List header={null} footer={null}>
         {projects.map(({ name, license, url }) => {
           const title = url ? (
-            <a href={url} target="_blank">
+            <a href={url} target="_blank" rel="noreferrer">
               {name}
             </a>
           ) : (
             { name }
           );
           return (
-            <List.Item>
+            <List.Item key={name}>
               <List.Item.Meta title={title} description={license} />
             </List.Item>
           );
