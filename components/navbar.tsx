@@ -1,16 +1,26 @@
 import { Menu } from "antd";
 import Link from "next/link";
 import { useState } from "react";
+import ModalAttention from "./modalAttention";
 import ModalOpenSourceLicense from "./modalOpenSourceLicense";
 
 const { SubMenu } = Menu;
 
 export default function NavBar() {
+  const [visibleModalAttention, setVisibleModalAttention] = useState(false);
   const [visibleModalOpenSourceLicense, setVisibleModalOpenSourceLicense] =
     useState(false);
 
+  function onCancelModalAttention() {
+    setVisibleModalAttention(false);
+  }
+
   function onCancelOpenSourceLicense() {
     setVisibleModalOpenSourceLicense(false);
+  }
+
+  function showModalAttention() {
+    setVisibleModalAttention(true);
   }
 
   function showOpenSourceLicense() {
@@ -29,11 +39,19 @@ export default function NavBar() {
           </Menu.Item>
         </SubMenu>
         <SubMenu key="help" title="Help">
+          <Menu.Item key="attention" onClick={showModalAttention}>
+            Attention
+          </Menu.Item>
           <Menu.Item key="opensource-license" onClick={showOpenSourceLicense}>
             Open source license
           </Menu.Item>
         </SubMenu>
       </Menu>
+
+      <ModalAttention
+        visible={visibleModalAttention}
+        onCancel={onCancelModalAttention}
+      />
 
       <ModalOpenSourceLicense
         visible={visibleModalOpenSourceLicense}
