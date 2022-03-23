@@ -11,7 +11,7 @@ import {
   Upload,
 } from "antd";
 import { useForm } from "antd/lib/form/Form";
-import { InboxOutlined } from "@ant-design/icons";
+import { CheckOutlined, InboxOutlined } from "@ant-design/icons";
 import { parse } from "asn3rd/dist/parser.js";
 import { useState } from "react";
 import Head from "next/head";
@@ -24,7 +24,7 @@ export default function Extract() {
   const [formFile] = useForm();
   const [formText] = useForm();
 
-  const [lastAttempt, setLastAttempt] = useState<string | undefined>(undefined);
+  const [lastAttempt, setLastAttempt] = useState("");
   const [working, setWorking] = useState(false);
   const [disabledFile, setDisabledFile] = useState(true);
   const [disabledText, setDisabledText] = useState(true);
@@ -66,7 +66,7 @@ export default function Extract() {
       }, 0);
     })
       .then(() => {
-        message.success("ASN.1 definition looks well formed.", 0);
+        setNumErrors(0);
       })
       .catch((reason) => {
         const errors = reason.errors
@@ -127,12 +127,22 @@ export default function Extract() {
     validate(text);
   }
 
-  function ErrorButton() {
-    return (
-      <Button danger onClick={onClickButtonShowErrors}>
-        Show {numErrors === 1 ? "an error" : "errors"}
-      </Button>
-    );
+  function ResultButton({
+    type,
+    numErrors,
+  }: {
+    type: string;
+    numErrors: number;
+  }) {
+    return lastAttempt === type ? (
+      numErrors ? (
+        <Button danger onClick={onClickButtonShowErrors}>
+          Show {numErrors === 1 ? "an error" : "errors"}
+        </Button>
+      ) : (
+        <Button type="primary" icon={<CheckOutlined />} />
+      )
+    ) : null;
   }
 
   return (
@@ -173,8 +183,8 @@ export default function Extract() {
                   onClick={validateFile}
                 >
                   Validate from file
-                </Button>
-                {numErrors && lastAttempt === "file" ? <ErrorButton /> : null}
+                </Button>{" "}
+                <ResultButton type="file" numErrors={numErrors} />
               </Form.Item>
             </Col>
           </Row>
@@ -205,8 +215,8 @@ export default function Extract() {
                   onClick={validateText}
                 >
                   Validate from text
-                </Button>
-                {numErrors && lastAttempt === "text" ? <ErrorButton /> : null}
+                </Button>{" "}
+                <ResultButton type="text" numErrors={numErrors} />
               </Form.Item>
             </Col>
           </Row>
