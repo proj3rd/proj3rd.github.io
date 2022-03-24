@@ -390,8 +390,8 @@ array.prototype.flatmap@^1.2.5:
     es-abstract "^1.19.0"
 
 asn3rd@proj3rd/asn3rd:
-  version "1.1.0"
-  resolved "https://codeload.github.com/proj3rd/asn3rd/tar.gz/9f114c7c12c97aa392c28c439049c64e09f1c693"
+  version "4.0.1"
+  resolved "https://codeload.github.com/proj3rd/asn3rd/tar.gz/6cd605447ef435aede350183288ad026e54e86c6"
   dependencies:
     antlr4 "^4.9.3"
     commander "^9.0.0"
