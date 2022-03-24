@@ -12,7 +12,7 @@ import {
 } from "antd";
 import { useForm } from "antd/lib/form/Form";
 import { CheckOutlined, InboxOutlined } from "@ant-design/icons";
-import { parse } from "asn3rd/dist/parser.js";
+import { extract as extractAsn1 } from "asn3rd/dist/extractor";
 import { useState } from "react";
 import Head from "next/head";
 
@@ -29,14 +29,14 @@ export default function Extract() {
   const [disabledFile, setDisabledFile] = useState(true);
   const [disabledText, setDisabledText] = useState(true);
   const [visibleModal, setVisibleModal] = useState(false);
-  const [numErrors, setNumErrors] = useState(0);
-  const [errors, setErrors] = useState("");
+  const [extracted, setExtracted] = useState("");
+  const [errored, setErrored] = useState(false);
 
   function onCancelModal() {
     setVisibleModal(false);
   }
 
-  function onClickButtonShowErrors() {
+  function onClickButtonShowExtracted() {
     setVisibleModal(true);
   }
 
@@ -55,40 +55,26 @@ export default function Extract() {
 
   async function extract(text: string) {
     message.destroy();
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<string>((resolve, reject) => {
       setTimeout(() => {
-        const [error] = parse(text);
+        const [error, extracted] = extractAsn1(text);
         if (error) {
           reject(error);
         } else {
-          resolve();
+          resolve(extracted);
         }
       }, 0);
     })
-      .then(() => {
-        setNumErrors(0);
+      .then((extracted) => {
+        setExtracted(extracted);
+        setErrored(false);
       })
       .catch((reason) => {
-        const errors = reason.errors
-          .map(
-            ({
-              line,
-              column,
-              msg,
-            }: {
-              line: number;
-              column: number;
-              msg: string;
-            }) => {
-              return `line ${line}:${column} ${msg}`;
-            }
-          )
-          .join("\n");
-        setNumErrors(reason.errors.length);
-        setErrors(errors);
-        setVisibleModal(true);
+        setExtracted(reason.message);
+        setErrored(true);
       })
       .finally(() => {
+        setVisibleModal(true);
         setWorking(false);
       });
   }
@@ -129,18 +115,21 @@ export default function Extract() {
 
   function ResultButton({
     type,
-    numErrors,
+    errored,
   }: {
     type: string;
-    numErrors: number;
+    extracted: string;
+    errored: boolean;
   }) {
     return lastAttempt === type ? (
-      numErrors ? (
-        <Button danger onClick={onClickButtonShowErrors}>
-          Show {numErrors === 1 ? "an error" : "errors"}
+      errored ? (
+        <Button danger onClick={onClickButtonShowExtracted}>
+          Show errors
         </Button>
       ) : (
-        <Button type="primary" icon={<CheckOutlined />} />
+        <Button type="primary" icon={<CheckOutlined />} onClick={onClickButtonShowExtracted}>
+          Show the extracted ASN.1
+        </Button>
       )
     ) : null;
   }
@@ -184,7 +173,7 @@ export default function Extract() {
                 >
                   Extract from a file
                 </Button>{" "}
-                <ResultButton type="file" numErrors={numErrors} />
+                <ResultButton type="file" extracted={extracted} errored={errored} />
               </Form.Item>
             </Col>
           </Row>
@@ -216,7 +205,7 @@ export default function Extract() {
                 >
                   Extract from a text
                 </Button>{" "}
-                <ResultButton type="text" numErrors={numErrors} />
+                <ResultButton type="text" extracted={extracted} errored={errored} />
               </Form.Item>
             </Col>
           </Row>
@@ -230,7 +219,7 @@ export default function Extract() {
           footer={null}
         >
           <TextArea
-            value={errors}
+            value={extracted}
             autoSize={{ minRows: 8, maxRows: 24 }}
             readOnly
           />
