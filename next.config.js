@@ -5,6 +5,7 @@ const fallbackWordExtractor = {
   buffer: require.resolve('buffer'),
   events: require.resolve('events'),
   path: require.resolve('path-browserify'),
+  process: require.resolve('process/browser'),
   stream: require.resolve('stream-browserify'),
   util: require.resolve('util'),
   zlib: require.resolve('browserify-zlib'),
