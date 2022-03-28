@@ -15,6 +15,7 @@ import { CheckOutlined, InboxOutlined } from "@ant-design/icons";
 import { extract as extractAsn1 } from "asn3rd/dist/extractor";
 import { useState } from "react";
 import Head from "next/head";
+import WordExtractor from "word-extractor";
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -93,6 +94,7 @@ export default function Extract() {
       setWorking(false);
       return;
     }
+    const wordExtractor = new WordExtractor();
     const reader = new FileReader();
     reader.addEventListener("load", (ev) => {
       const { result } = reader;

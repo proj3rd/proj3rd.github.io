@@ -1,5 +1,15 @@
 const isProd = process.env.NODE_ENV === 'production'
 
+const fallbackWordExtractor = {
+  assert: require.resolve('assert'),
+  buffer: require.resolve('buffer'),
+  events: require.resolve('events'),
+  path: require.resolve('path-browserify'),
+  stream: require.resolve('stream-browserify'),
+  util: require.resolve('util'),
+  zlib: require.resolve('browserify-zlib'),
+};
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -8,6 +18,7 @@ const nextConfig = {
     config.resolve.fallback = {
       fs: false,
       process: false,
+      ...fallbackWordExtractor,
     };
     return config;
   },
