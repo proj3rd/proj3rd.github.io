@@ -84,6 +84,7 @@ export default function Extract() {
   async function extractFromFile() {
     setWorking(true);
     setLastAttempt("file");
+    setExtracted("");
     const fileField = formFile.getFieldValue("file");
     if (!fileField.fileList.length) {
       setWorking(false);
@@ -91,12 +92,6 @@ export default function Extract() {
     }
     const file = fileField.fileList[0];
     const fileObj = file.originFileObj as File;
-    if (!fileObj) {
-      console.error('fileObj is undefined');
-      message.error("Oops. It is unexpected.", 0);
-      setWorking(false);
-      return;
-    }
     if (!(fileObj instanceof Blob)) {
       console.error('fileObj is not Blob');
       message.error("Oops. It is unexpected.", 0);
@@ -125,6 +120,7 @@ export default function Extract() {
   async function extractFromText() {
     setWorking(true);
     setLastAttempt("text");
+    setExtracted("");
     const text = formText.getFieldValue("text");
     extract(text);
   }
@@ -137,7 +133,7 @@ export default function Extract() {
     extracted: string;
     errored: boolean;
   }) {
-    return lastAttempt === type ? (
+    return lastAttempt === type && extracted ? (
       errored ? (
         <Button danger onClick={onClickButtonShowExtracted}>
           Show errors
