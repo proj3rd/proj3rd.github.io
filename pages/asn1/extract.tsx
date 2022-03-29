@@ -13,6 +13,7 @@ import {
 import { useForm } from "antd/lib/form/Form";
 import { CheckOutlined, InboxOutlined } from "@ant-design/icons";
 import { extract as extractAsn1 } from "asn3rd/dist/extractor";
+import blobToBuffer from "blob-to-buffer";
 import { useState } from "react";
 import Head from "next/head";
 import WordExtractor from "word-extractor";
@@ -91,21 +92,34 @@ export default function Extract() {
     const file = fileField.fileList[0];
     const fileObj = file.originFileObj as File;
     if (!fileObj) {
+      console.error('fileObj is undefined');
+      message.error("Oops. It is unexpected.", 0);
       setWorking(false);
       return;
     }
-    const wordExtractor = new WordExtractor();
-    const reader = new FileReader();
-    reader.addEventListener("load", (ev) => {
-      const { result } = reader;
-      if (typeof result !== "string") {
+    if (!(fileObj instanceof Blob)) {
+      console.error('fileObj is not Blob');
+      message.error("Oops. It is unexpected.", 0);
+      setWorking(false);
+      return;
+    }
+    blobToBuffer(fileObj, (error, buffer) => {
+      if (error) {
+        console.error(error);
         message.error("Oops. It is unexpected.", 0);
         setWorking(false);
         return;
       }
-      extract(result);
+      const wordExtractor = new WordExtractor();
+      wordExtractor.extract(buffer).then((doc) => {
+        const text = doc.getBody();
+        extract(text);
+      }).catch((reason) => {
+        console.error(reason);
+        message.error("Oops. It is unexpected.", 0);
+        setWorking(false);
+      });
     });
-    reader.readAsText(fileObj);
   }
 
   async function extractFromText() {
