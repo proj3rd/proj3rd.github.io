@@ -12,8 +12,12 @@ export default function ModalAttention(props: Props) {
       <List>
         <List.Item>
           All serivces and operations are executed on the client side, i.e. your web browser.
-          None of data is transferred to a &lsquo;server&rsquo; and there is no risk of leaking confidential information by Project 3rd itself.
+          None of data is transferred to the outside.
           At the same time, performance of the serivces and operations depend on client&apos;s processing capability.
+        </List.Item>
+        <List.Item>
+          All services and operations are not capable of handling an encrypted file.
+          Make sure that a file you want to use is not encrypted.
         </List.Item>
       </List>
     </Modal>
